@@ -1,0 +1,44 @@
+vers 0.1 to only support basic stuff like  initialization or loops or conditionals thats all
+
+architecture or the plan is:
+
+src code -> lexer ->tokens->parser->AST->interpreter-> output
+later we can reuse stuff when we wanna make a compiler asw so a lot of this proj can be reused
+
+ideas about each file:
+
+lexer:
+
+basically turns something like:
+let x=5+3 into :  
+LET 
+IDENTIFIER(x)
+EQUAL
+NUMBER(5)
+PLUS
+NUMBER(3)
+EOF
+
+parser:
+
+basically turns tokens into:
+Assignment
+ ├── Variable(x)
+ └── Add
+      ├──5
+      └──3
+
+ast:
+stores tree nodes 
+
+interpreter:
+it walks the tree basically like:
+Assignment -> evaluate expression -> store variable -> continue 
+
+env:
+stores variables 
+think hashmaps basically
+
+value:
+every runtime value 
+
