@@ -39,8 +39,6 @@ int main(int argc, char *argv[])
     char *source = readSource(fp,size);
     fclose(fp);
     if(source ==NULL){
-        fprintf(stderr,"failed to read src file. \n");
-        fclose(fp);
         return 1;
     }
     fputs(source,stdout);
