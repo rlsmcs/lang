@@ -3,7 +3,9 @@ CC = gcc
 CFLAGS = -Wall -Wextra -std=c17 -Iinclude
 
 SRC = src/main.c \
-      src/lexer.c
+      src/lexer.c \
+	  src/vector.c
+      
 
 TARGET = lang
 
