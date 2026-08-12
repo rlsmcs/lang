@@ -21,7 +21,21 @@ struct TokenVector lex(const char *source){
             tokenVectorPush(&tokens,token);
             continue;
         }
+        else if(isalpha(*current) || *current == '_'){
+            const char *start = current;
+            while(isalnum(*current)||*current == '_'){
+                current ++;
+            }
+            struct Token token;
+            token.type = TOKEN_IDENTIFIER;
+            token.start =start;
+            token.length= current-start;
+            token.line=line;
+            tokenVectorPush(&tokens,token);
+            continue;
+        }
         current++;
+
     }
     return tokens;
 }

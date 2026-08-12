@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "lexer.h"
+#include "token.h"
+
 char *readSource(FILE *fp, size_t filesize){
     char *buffer = malloc(filesize+1);
     if(buffer==NULL){
@@ -37,11 +41,23 @@ int main(int argc, char *argv[])
     size_t size =(size_t)filesize; // now we can convert to size_t and use everywhere 
     rewind(fp);
     char *source = readSource(fp,size);
+    struct TokenVector tokens = lex(source);
+
+    // temporary block of code to inspect tokens:
+    for (size_t i = 0; i < tokens.size; i++) {
+        struct Token token = tokens.data[i];
+
+        printf("Token type: %d -  Value: %.*s  -  Line: %zu\n",  // * also expects an int thats why we do type casting
+           token.type,
+           (int)token.length,
+           token.start,
+           token.line);
+    }
+    // end of temp block ;-;
     fclose(fp);
     if(source ==NULL){
         return 1;
     }
-    fputs(source,stdout);
     free(source);
     return 0;
 }
