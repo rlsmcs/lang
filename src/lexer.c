@@ -8,6 +8,16 @@ struct TokenVector lex(const char *source){
     const char *current = source;
     size_t line=1;
     while(*current !='\0'){
+        if(*current == '\n'){
+            line++;
+            current++;
+            continue;
+        }
+        if(isspace(*current)){
+            current++;
+            continue;              //whitespace check comes after newline cuz newline is also whitespace and we wanna count the lines first
+        }
+        //NUMBERS
         if(isdigit(*current)){
             const char *start = current;
             while(isdigit(*current)){
@@ -20,8 +30,8 @@ struct TokenVector lex(const char *source){
             token.line=line;
             tokenVectorPush(&tokens,token);
             continue;
-        }
-        else if(isalpha(*current) || *current == '_'){
+        } // IDENTIFIERS
+        if(isalpha(*current) || *current == '_'){
             const char *start = current;
             while(isalnum(*current)||*current == '_'){
                 current ++;
@@ -34,6 +44,126 @@ struct TokenVector lex(const char *source){
             tokenVectorPush(&tokens,token);
             continue;
         }
+        if(*current == '+'){
+            struct Token token;
+            token.type = TOKEN_PLUS;
+            token.start = current;
+            token.length=1;
+            token.line=line;
+            tokenVectorPush(&tokens,token);
+            current++;
+            continue;
+        }
+        if (*current == '-') {
+            struct Token token;
+            token.type = TOKEN_MINUS;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+        if (*current == '*') {
+            struct Token token;
+            token.type = TOKEN_STAR;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+
+        if (*current == '/') {
+            struct Token token;
+            token.type = TOKEN_SLASH;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+
+        if (*current == '%') {
+            struct Token token;
+            token.type = TOKEN_PERCENT;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }       
+
+        if (*current == '=') {
+            struct Token token;
+            token.type = TOKEN_ASSIGN;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+
+        if (*current == '(') {
+            struct Token token;
+            token.type = TOKEN_LPAREN;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+
+        if (*current == ')') {
+            struct Token token;
+            token.type = TOKEN_RPAREN;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+
+        if (*current == '{') {
+            struct Token token;
+            token.type = TOKEN_LBRACE;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+
+        if (*current == '}') {
+            struct Token token;
+            token.type = TOKEN_RBRACE;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+
+        if(*current == ';'){
+            struct Token token;
+            token.type = TOKEN_SEMICOLON;
+            token.start = current;
+            token.length = 1;
+            token.line = line;
+            tokenVectorPush(&tokens, token);
+            current++;
+            continue;
+        }
+
+
         current++;
 
     }
