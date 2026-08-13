@@ -180,6 +180,15 @@ struct TokenVector lex(const char *source){
 
         current++;
 
+
+
     }
+    //eof checking
+    struct Token eof;
+    eof.type=TOKEN_EOF;
+    eof.start=current;
+    eof.length = 0;
+    eof.line = line;
+    tokenVectorPush(&tokens,eof);
     return tokens;
 }
