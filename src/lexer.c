@@ -1,6 +1,20 @@
 #include "lexer.h"
 #include "vector.h"
 #include <ctype.h>  
+#include <string.h>
+
+enum TokenType identifierType(const char *start, size_t length)
+{
+    if(length==3 && strncmp(start,"let",3)==0) {
+        return TOKEN_LET;
+    }
+
+    if(length==5 && strncmp(start,"print",5)==0) {
+        return TOKEN_PRINT;
+    }
+
+    return TOKEN_IDENTIFIER;
+}
 
 struct TokenVector lex(const char *source){
     struct TokenVector tokens;
@@ -37,7 +51,7 @@ struct TokenVector lex(const char *source){
                 current ++;
             }
             struct Token token;
-            token.type = TOKEN_IDENTIFIER;
+            token.type = identifierType(start, current-start);
             token.start =start;
             token.length= current-start;
             token.line=line;
