@@ -45,10 +45,31 @@ struct ASTNode *parseNumber(struct Parser *parser){
     return node;
 }
 
+struct ASTNode *parseVariable(struct Parser *parser)
+{
+    struct Token *token = peek(parser);
+    struct ASTNode *node = malloc(sizeof(struct ASTNode));
+    if(node==NULL){
+        fprintf(stderr,"failed to alloc memory for variable node\n\n");
+        return NULL;
+    }
+    node->type = AST_VARIABLE;
+    node->name = malloc(token->length + 1);
+    if(node->name ==NULL){
+        free(node);
+        return(NULL);
+    }
+    memcpy(node->name, token->start, token->length);
+    node->name[token->length] = '\0';
+    advance(parser);
+    return node;
+
+}
+
 struct ASTNode *parse(struct TokenVector *tokens)  // entry point
 {
     struct Parser parser;
     parserInit(&parser,tokens);
-    return parseNumber(&parser);
+    return parseVariable(&parser);
 }
 
