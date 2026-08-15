@@ -3,6 +3,7 @@
 
 #include "lexer.h"
 #include "token.h"
+#include "parser.h"
 
 char *readSource(FILE *fp, size_t filesize){
     char *buffer = malloc(filesize+1);
@@ -42,8 +43,9 @@ int main(int argc, char *argv[])
     rewind(fp);
     char *source = readSource(fp,size);
     struct TokenVector tokens = lex(source);
+    struct ASTNode *ast = parse(&tokens);
 
-    // temporary block of code to inspect tokens:
+    // temporary block of code to inspect tokens and now also parse the numbers.lang file 
     for (size_t i = 0; i < tokens.size; i++) {
         struct Token token = tokens.data[i];
 
@@ -53,6 +55,10 @@ int main(int argc, char *argv[])
            token.start,
            token.line);
     }
+    printf("ast type: %d \n\n",ast->type);
+    printf("ast value: %f\n\n", ast->number);
+    free(ast);
+    
     // end of temp block ;-;
     fclose(fp);
     if(source ==NULL){

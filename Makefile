@@ -4,7 +4,8 @@ CFLAGS = -Wall -Wextra -std=c17 -Iinclude
 
 SRC = src/main.c \
       src/lexer.c \
-	  src/vector.c
+	  src/vector.c \
+	  src/parser.c
       
 
 TARGET = lang
