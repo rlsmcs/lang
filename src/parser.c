@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct ASTNode *parseNumber(struct Parser *parser);
+struct ASTNode *parseVariable(struct Parser *parser);
+struct ASTNode *parseVarDeclaration(struct Parser *parser);
+
 struct Token *peek(struct Parser *parser)
 {
     return &parser->tokens->data[parser->current]; // returns pointer to token at curr index 
@@ -70,6 +74,36 @@ struct ASTNode *parse(struct TokenVector *tokens)  // entry point
 {
     struct Parser parser;
     parserInit(&parser,tokens);
-    return parseVariable(&parser);
+    if(peek(&parser)->type == TOKEN_LET){
+    return parseVarDeclaration(&parser);
+    }
+    if(peek(&parser)->type == TOKEN_IDENTIFIER){
+        return parseVariable(&parser);
+    }
+    if(peek(&parser)->type == TOKEN_NUMBER){
+        return parseNumber(&parser);
+    }
+    return NULL;
 }
 
+
+struct ASTNode *parseVarDeclaration(struct Parser *parser){
+    match(parser, TOKEN_LET);
+    struct Token *nameToken= peek(parser);
+    advance(parser);
+    match(parser,TOKEN_ASSIGN);
+    struct ASTNode *value = parseNumber(parser);
+    match(parser, TOKEN_SEMICOLON);
+    
+    struct ASTNode *node=  malloc(sizeof(struct ASTNode));
+    if(node==NULL){
+        fprintf(stderr, "failed to alloc memory\n");
+        return NULL;
+    }
+    node->type = AST_VAR_DECL;
+    node->name=malloc(nameToken->length + 1);
+    memcpy(node->name, nameToken->start, nameToken->length);
+    node->name[nameToken->length]='\0';
+    node->value = value;
+    return node;
+}
