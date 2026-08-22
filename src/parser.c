@@ -10,6 +10,9 @@ struct ASTNode *parsePrint(struct Parser *parser);
 struct ASTNode *parseBinary(struct Parser *parser);
 struct ASTNode *parsePrimary(struct Parser *parser);
 struct ASTNode *parseExpression(struct Parser *parser);
+int isBinaryOperator(enum TokenType type);
+
+
 
 struct Token *peek(struct Parser *parser)
 {
@@ -130,7 +133,7 @@ struct ASTNode *parseBinary(struct Parser *parser)
 {
     struct ASTNode *left = parsePrimary(parser);
     enum TokenType operator= peek(parser)->type;
-    if(operator != TOKEN_PLUS){
+    if(!isBinaryOperator(operator)){
         return left;
     }
     advance(parser);
@@ -161,4 +164,14 @@ struct ASTNode *parseExpression(struct Parser *parser)
 {
     return parseBinary(parser);
 }
+
+
+int isBinaryOperator(enum TokenType type)  // helper func for our expressions
+{
+    return type == TOKEN_PLUS ||
+           type == TOKEN_MINUS ||
+           type == TOKEN_STAR||
+           type == TOKEN_SLASH;
+}
+
 
