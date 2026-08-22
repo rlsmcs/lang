@@ -6,6 +6,10 @@
 struct ASTNode *parseNumber(struct Parser *parser);
 struct ASTNode *parseVariable(struct Parser *parser);
 struct ASTNode *parseVarDeclaration(struct Parser *parser);
+struct ASTNode *parsePrint(struct Parser *parser);
+struct ASTNode *parseBinary(struct Parser *parser);
+struct ASTNode *parsePrimary(struct Parser *parser);
+struct ASTNode *parseExpression(struct Parser *parser);
 
 struct Token *peek(struct Parser *parser)
 {
@@ -77,13 +81,10 @@ struct ASTNode *parse(struct TokenVector *tokens)  // entry point
     if(peek(&parser)->type == TOKEN_LET){
     return parseVarDeclaration(&parser);
     }
-    if(peek(&parser)->type == TOKEN_IDENTIFIER){
-        return parseVariable(&parser);
+    if(peek(&parser)->type == TOKEN_PRINT){
+        return parsePrint(&parser);
     }
-    if(peek(&parser)->type == TOKEN_NUMBER){
-        return parseNumber(&parser);
-    }
-    return NULL;
+    return parseExpression(&parser);
 }
 
 
@@ -92,7 +93,7 @@ struct ASTNode *parseVarDeclaration(struct Parser *parser){
     struct Token *nameToken= peek(parser);
     advance(parser);
     match(parser,TOKEN_ASSIGN);
-    struct ASTNode *value = parseNumber(parser);
+    struct ASTNode *value = parseExpression(parser);
     match(parser, TOKEN_SEMICOLON);
     
     struct ASTNode *node=  malloc(sizeof(struct ASTNode));
@@ -107,3 +108,57 @@ struct ASTNode *parseVarDeclaration(struct Parser *parser){
     node->value = value;
     return node;
 }
+
+struct ASTNode *parsePrint(struct Parser *parser){
+    match(parser, TOKEN_PRINT);
+    match(parser, TOKEN_LPAREN);
+    struct ASTNode *value = parseExpression(parser);
+    match(parser, TOKEN_RPAREN);
+    match(parser,TOKEN_SEMICOLON);
+
+    struct ASTNode *node = malloc(sizeof(struct ASTNode));
+    if(node==NULL){
+        fprintf(stderr, "failed to alloc memory\n");
+        return NULL;
+    }
+    node->type = AST_PRINT;
+    node->value = value;
+    return node;
+}
+
+struct ASTNode *parseBinary(struct Parser *parser)
+{
+    struct ASTNode *left = parsePrimary(parser);
+    enum TokenType operator= peek(parser)->type;
+    if(operator != TOKEN_PLUS){
+        return left;
+    }
+    advance(parser);
+    struct ASTNode *right = parsePrimary(parser);
+    struct ASTNode *node=malloc(sizeof(struct ASTNode));
+    if(node==NULL){
+        fprintf(stderr,"failed to alloc memory for binary node \n");
+        return NULL;
+    }
+    node->type= AST_BINARY;
+    node->left=left;
+    node->right=right;
+    node->operator=operator;
+    return node;
+}
+
+struct ASTNode *parsePrimary(struct Parser *parser){
+    if(peek(parser)->type == TOKEN_NUMBER){
+        return parseNumber(parser);
+    }
+    if(peek(parser)->type == TOKEN_IDENTIFIER){
+        return parseVariable(parser);
+    }
+    return NULL;
+}
+
+struct ASTNode *parseExpression(struct Parser *parser)
+{
+    return parseBinary(parser);
+}
+

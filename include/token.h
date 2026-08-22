@@ -2,6 +2,7 @@
 #define TOKEN_H
 
 #include <stddef.h> // we use size_t thats why
+#include "token.h"
 
 enum TokenType{
     //special ones 

@@ -55,8 +55,9 @@ int main(int argc, char *argv[])
            token.start,
            token.line);
     }
-    printf("name: %s \n\n",ast->name);
-    printf("value: %f \n\n", ast->value->number);
+    printf("ast type: %d \n\n",ast->type);
+    printf("left: %s \n\n", ast->left->name);
+    printf("right: %f \n\n", ast->right->number);
     free(ast);
     
     // end of temp block ;-;
