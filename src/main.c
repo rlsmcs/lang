@@ -21,6 +21,29 @@ char *readSource(FILE *fp, size_t filesize){
     return buffer;
 }
 
+// temp recursive AST printer to test precedence
+void printAST(struct ASTNode *node)
+{
+    if(node==NULL){
+        return;
+    }
+    printf("type:%d\n", node->type);
+    if(node->type == AST_NUMBER){
+        printf("number: %f\n", node->number);
+    }
+    if(node->type == AST_VARIABLE){
+        printf("variable: %s\n", node->name);
+    }
+    if(node->type == AST_BINARY){
+        printf("operator: %d\n", node->operator);
+        printf("LEFT:\n");
+        printAST(node->left);
+        printf("RIGHT:\n");
+        printAST(node->right);
+    }
+}
+// end of temp func
+
 int main(int argc, char *argv[])
 {
     if(argc!=2){
@@ -55,12 +78,13 @@ int main(int argc, char *argv[])
            token.start,
            token.line);
     }
+    /* temp block for now
     printf("ast type: %d \n\n",ast->type);
     printf("left: %s \n\n", ast->left->name);
-    printf("right: %f \n\n", ast->right->number);
+    printf("right: %f \n\n", ast->right->number); */ 
+    printAST(ast);
+
     free(ast);
-    
-    // end of temp block ;-;
     fclose(fp);
     if(source ==NULL){
         return 1;

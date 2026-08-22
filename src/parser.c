@@ -10,6 +10,7 @@ struct ASTNode *parsePrint(struct Parser *parser);
 struct ASTNode *parseBinary(struct Parser *parser);
 struct ASTNode *parsePrimary(struct Parser *parser);
 struct ASTNode *parseExpression(struct Parser *parser);
+struct ASTNode *parseTerm(struct Parser *parser);
 int isBinaryOperator(enum TokenType type);
 
 
@@ -160,9 +161,28 @@ struct ASTNode *parsePrimary(struct Parser *parser){
     return NULL;
 }
 
-struct ASTNode *parseExpression(struct Parser *parser)
+struct ASTNode *parseExpression(struct Parser *parser) // we handle + and - 
 {
-    return parseBinary(parser);
+    struct ASTNode *left= parseTerm(parser);
+    while(isBinaryOperator(peek(parser)->type)){
+        enum TokenType operator = peek(parser)->type;
+        if(operator!= TOKEN_PLUS && operator!=TOKEN_MINUS){
+            break;
+        }
+        advance(parser);
+        struct ASTNode *right =parseTerm(parser);
+        struct ASTNode *node= malloc(sizeof(struct ASTNode));
+        if(node==NULL){
+            fprintf(stderr, "failed to alloc memory for binary nrode\n");
+            return NULL;
+        }
+        node->type=AST_BINARY;
+        node->left=left;
+        node->right=right;
+        left=node;
+        
+    }
+    return left;
 }
 
 
@@ -174,4 +194,29 @@ int isBinaryOperator(enum TokenType type)  // helper func for our expressions
            type == TOKEN_SLASH;
 }
 
+struct ASTNode *parseTerm(struct Parser *parser)  // we handle * and /
+{
+    struct ASTNode *left = parsePrimary(parser);
+    while(isBinaryOperator(peek(parser)->type)) {
+        enum TokenType operator = peek(parser)->type;
+        if (operator != TOKEN_STAR &&
+            operator != TOKEN_SLASH) {
+            break;
+        }
+        advance(parser);
+        struct ASTNode *right = parsePrimary(parser);
+        struct ASTNode *node = malloc(sizeof(struct ASTNode));
+        if (node == NULL) {
+            fprintf(stderr,"failed to alloc memory for binary node\n");
+            return NULL;
+        }
+        node->type = AST_BINARY;
+        node->left = left;
+        node->right = right;
+        node->operator = operator;
+
+        left=node;  // we are building the tree progressively so fun
+    }
+    return left;
+}
 
