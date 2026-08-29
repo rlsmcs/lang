@@ -158,6 +158,17 @@ struct ASTNode *parsePrimary(struct Parser *parser){
     if(peek(parser)->type == TOKEN_IDENTIFIER){
         return parseVariable(parser);
     }
+    if(peek(parser)->type == TOKEN_LPAREN){
+        advance(parser);
+        struct ASTNode *node =parseExpression(parser);
+        if(peek(parser)->type !=TOKEN_RPAREN){
+            fprintf(stderr,"expcted )\n");
+            return NULL;
+        }
+        advance(parser);
+        return node;
+    }
+    
     return NULL;
 }
 
