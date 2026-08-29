@@ -205,12 +205,12 @@ Completed:
 - `print`
 - Binary operators
 - Operator precedence
+- Parentheses
+- Multiple statements and complete programs
 
 Working on:
 
-- Parentheses
 - Unary operators
-- Multiple statements and complete programs
 - Runtime environment
 - Interpreter
 - Conditions and loops
