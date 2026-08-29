@@ -13,6 +13,8 @@ struct ASTNode *parseExpression(struct Parser *parser);
 struct ASTNode *parseTerm(struct Parser *parser);
 int isBinaryOperator(enum TokenType type);
 
+struct ASTNode *parseProgram(struct Parser *parser);
+
 
 
 struct Token *peek(struct Parser *parser)
@@ -82,13 +84,7 @@ struct ASTNode *parse(struct TokenVector *tokens)  // entry point
 {
     struct Parser parser;
     parserInit(&parser,tokens);
-    if(peek(&parser)->type == TOKEN_LET){
-    return parseVarDeclaration(&parser);
-    }
-    if(peek(&parser)->type == TOKEN_PRINT){
-        return parsePrint(&parser);
-    }
-    return parseExpression(&parser);
+    return parseProgram(&parser);
 }
 
 
@@ -231,3 +227,42 @@ struct ASTNode *parseTerm(struct Parser *parser)  // we handle * and /
     return left;
 }
 
+struct ASTNode *parseProgram(struct Parser *parser)
+{
+    struct ASTNode *program= malloc(sizeof(struct ASTNode));
+    if(program==NULL){
+        fprintf(stderr, "failed to alloc memory for program!\n");
+        return NULL;
+    }
+    program->type=AST_PROGRAM;
+    program->statements=NULL;
+    program->statementCount=0;
+
+    while(peek(parser)->type != TOKEN_EOF){
+        struct ASTNode *statement = NULL;
+        if(peek(parser)->type==TOKEN_LET){
+            statement=parseVarDeclaration(parser);
+        }
+        else if(peek(parser)->type == TOKEN_PRINT){
+            statement= parsePrint(parser);
+        }
+        else{
+            statement=parseExpression(parser);
+        }
+        if(statement==NULL){
+            free(program);
+            return NULL;
+        }
+        program->statements= realloc(program->statements,sizeof(struct ASTNode *)*(program->statementCount +1));
+        if(program->statements==NULL){
+            fprintf(stderr, "failed to allocate statement memory\n");
+            free(program);
+            return NULL;
+        }
+        program->statements[program->statementCount] = statement;
+        program->statementCount++;
+
+        
+    }
+    return program;
+}

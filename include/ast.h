@@ -6,6 +6,7 @@ enum ASTNodeType{
     AST_VAR_DECL,
     AST_PRINT,
     AST_BINARY,
+    AST_PROGRAM,
 };
 struct ASTNode{
     enum ASTNodeType type;
@@ -16,5 +17,8 @@ struct ASTNode{
     struct ASTNode *left;
     struct ASTNode *right;
     enum TokenType operator;
+
+    struct ASTNode **statements;  //so that we can store pointers to ast nodes now
+    size_t statementCount;
 };
 #endif

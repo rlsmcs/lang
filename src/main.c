@@ -21,13 +21,20 @@ char *readSource(FILE *fp, size_t filesize){
     return buffer;
 }
 
-// temp recursive AST printer to test precedence
+/* temp recursive AST printer to test precedence
 void printAST(struct ASTNode *node)
 {
     if(node==NULL){
         return;
     }
     printf("type:%d\n", node->type);
+    printf("program statements: %zu\n", node->statementCount);
+
+    for(size_t i = 0; i < node->statementCount; i++){
+        printf("statement %zu type: %d\n",
+            i,
+            node->statements[i]->type);
+    }
     if(node->type == AST_NUMBER){
         printf("number: %f\n", node->number);
     }
@@ -42,7 +49,42 @@ void printAST(struct ASTNode *node)
         printAST(node->right);
     }
 }
-// end of temp func
+*/ 
+void printAST(struct ASTNode *node, int indent)
+{
+    if(node == NULL)
+        return;
+    for(int i = 0; i < indent; i++)
+        printf("  ");
+
+    switch(node->type){
+        case AST_PROGRAM:
+            printf("PROGRAM\n");
+            for(size_t i = 0; i < node->statementCount; i++){
+                printAST(node->statements[i], indent + 1);
+            }
+            break;
+        case AST_NUMBER:
+            printf("NUMBER: %f\n", node->number);
+            break;
+        case AST_VARIABLE:
+            printf("VARIABLE: %s\n", node->name);
+            break;
+        case AST_VAR_DECL:
+            printf("VAR_DECL: %s\n", node->name);
+            printAST(node->value, indent + 1);
+            break;
+        case AST_PRINT:
+            printf("PRINT\n");
+            printAST(node->value, indent + 1);
+            break;
+        case AST_BINARY:
+            printf("BINARY: %d\n", node->operator);
+            printAST(node->left, indent + 1);
+            printAST(node->right, indent + 1);
+            break;
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -68,7 +110,7 @@ int main(int argc, char *argv[])
     struct TokenVector tokens = lex(source);
     struct ASTNode *ast = parse(&tokens);
 
-    // temporary block of code to inspect tokens and now also parse the numbers.lang file 
+    /* temporary block of code to inspect tokens and now also parse the numbers.lang file 
     for (size_t i = 0; i < tokens.size; i++) {
         struct Token token = tokens.data[i];
 
@@ -76,13 +118,13 @@ int main(int argc, char *argv[])
            token.type,
            (int)token.length,
            token.start,
-           token.line);
+           token.line); 
     }
-    /* temp block for now
+    temp block for now
     printf("ast type: %d \n\n",ast->type);
     printf("left: %s \n\n", ast->left->name);
     printf("right: %f \n\n", ast->right->number); */ 
-    printAST(ast);
+    printAST(ast,0);
 
     free(ast);
     fclose(fp);
